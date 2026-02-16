@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { DeleteStaffAction } from "../actions/DeleteStaffAction";
+import { DeleteStaffAction } from "../(admin)/actions/StaffActions/DeleteStaffAction";
 
 function DeleteStaff({ id }: { id: number }) {
   return (

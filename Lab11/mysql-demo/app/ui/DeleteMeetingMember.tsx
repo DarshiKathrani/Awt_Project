@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 
-import { DeleteMeetingMemberAction } from "../actions/DeleteMeetingMemberAction";
+import { DeleteMeetingMemberAction } from "../(admin)/actions/MeetingMemberActions/DeleteMeetingMemberAction";
 
 function DeleteMeetingMember({ id }: { id: number }) {
   return (

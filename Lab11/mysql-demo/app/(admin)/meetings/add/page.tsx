@@ -1,4 +1,4 @@
-import { AddMeetingAction } from "@/app/actions/AddMeetingAction";
+import { AddMeetingAction } from "../../actions/MeetingActions/AddMeetingAction";
 import React from "react";
 import { prisma } from "@/lib/prisma";
 

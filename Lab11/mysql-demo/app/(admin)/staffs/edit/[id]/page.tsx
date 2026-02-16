@@ -1,6 +1,6 @@
 import React from 'react'
 import { prisma } from "@/lib/prisma";
-import EditStaffAction from '@/app/actions/EditStaffAction';
+import EditStaffAction from '@/app/(admin)/actions/StaffActions/EditStaffAction';
 import Link from 'next/link';
 
 const countryCodes = [

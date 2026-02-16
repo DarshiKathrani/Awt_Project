@@ -1,4 +1,4 @@
-import { AddMeetingTypeAction } from "@/app/actions/AddMeetingTypeAction";
+import { AddMeetingTypeAction } from "../../actions/MeetingTypeActions/AddMeetingTypeAction";
 import React from "react";
 import Link from "next/link";
 

@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { SaveAttendanceAction } from "@/app/actions/SaveAttendanceAction";
+import { SaveAttendanceAction } from "../../actions/AttendanceActions/SaveAttendanceAction";
 import Link from "next/link";
 import AttendanceToggle from "@/app/components/AttendanceToggle"; 
 

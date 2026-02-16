@@ -1,10 +1,17 @@
-import { Post, Body, Controller, Res, BadRequestException, UseGuards } from "@nestjs/common";
+import {
+  Post,
+  Body,
+  Controller,
+  Res,
+  BadRequestException,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AdminGuard } from './admin.guard';
-import type { Response } from "express";
+import type { Response } from 'express';
 
 @Controller('auth')
-export class AuthContoller {
+export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Post('login')
@@ -13,14 +20,24 @@ export class AuthContoller {
     @Res({ passthrough: true }) res: Response
   ) {
     const { email, password } = body;
+
     const result = await this.authService.login(email, password);
+
 
     res.cookie('token', result.token, {
       httpOnly: true,
-      sameSite: 'strict',
+      sameSite: 'lax',
+      secure: false, 
+      path: '/',
     });
 
     return { message: 'Login successful' };
+  }
+
+  @Post('logout')
+  logout(@Res({ passthrough: true }) res: Response) {
+    res.clearCookie('token', { path: '/' });
+    return { message: 'Logged out successfully' };
   }
 
   @Post('register')
@@ -35,22 +52,22 @@ export class AuthContoller {
     return this.authService.register(name, email, password, role);
   }
 
-@Post('create-staff')
-@UseGuards(AdminGuard)
-async createStaff(@Body() body: any) {
-  const { name, email, password, role, mobile, remarks } = body;
+  @Post('create-staff')
+  @UseGuards(AdminGuard)
+  async createStaff(@Body() body: any) {
+    const { name, email, password, role, mobile, remarks } = body;
 
-  if (!name || !email || !password || !role) {
-    throw new BadRequestException('Required fields missing');
+    if (!name || !email || !password || !role) {
+      throw new BadRequestException('Required fields missing');
+    }
+
+    return this.authService.createStaffWithUser({
+      name,
+      email,
+      password,
+      role,
+      mobile,
+      remarks,
+    });
   }
-
-  return this.authService.createStaffWithUser({
-    name,
-    email,
-    password,
-    role,
-    mobile,
-    remarks,
-  });
-}
 }

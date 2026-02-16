@@ -1,6 +1,6 @@
 import React from 'react'
 import { prisma } from "@/lib/prisma";
-import EditMeetingTypeAction from '@/app/actions/EditMeetingTypeAction';
+import EditMeetingTypeAction from '@/app/(admin)/actions/MeetingTypeActions/EditMeetingTypeAction';
 import Link from 'next/link';
 
 async function EditUser({params}:{params:Promise<{id:string}>}) {

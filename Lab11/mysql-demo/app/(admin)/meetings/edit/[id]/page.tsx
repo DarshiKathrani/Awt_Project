@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import EditMeetingAction from "@/app/actions/EditMeetingAction";
+import EditMeetingAction from "@/app/(admin)/actions/MeetingActions/EditMeetingAction";
 
 async function EditUser({ params }: { params: { id: string } }) {
   const { id } = await params;

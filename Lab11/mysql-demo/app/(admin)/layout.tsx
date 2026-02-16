@@ -13,7 +13,7 @@ export default async function AdminLayout({
   const token = cookieStore.get("token");
 
   if (!token) {
-    redirect("/login");
+    redirect("/");
   }
 
   let payload: { role: Role };

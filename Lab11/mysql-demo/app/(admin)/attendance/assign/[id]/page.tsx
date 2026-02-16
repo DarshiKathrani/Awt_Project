@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { AssignMemberAction } from "@/app/actions/AssignMemberAction";
+import { AssignMemberAction } from "@/app/(admin)/actions/AttendanceActions/AssignMemberAction";
 import Link from "next/link";
 
 export default async function AssignMembers({ params }: { params: Promise<{ id: string }> }) {

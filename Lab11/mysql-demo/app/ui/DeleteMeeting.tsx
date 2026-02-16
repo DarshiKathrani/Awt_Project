@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { DeleteMeetingAction } from "../actions/DeleteMeetingAction";
+import { DeleteMeetingAction } from "../(admin)/actions/MeetingActions/DeleteMeetingAction";
 
 function DeleteButton({ id }: { id: number }) {
   return (

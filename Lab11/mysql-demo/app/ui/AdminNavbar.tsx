@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LogoutAction } from "../actions/LogoutAction";
+import { LogoutAction } from "../(admin)/actions/AuthActions/LogoutAction";
 
 export default function AdminNavbar() {
   const pathname = usePathname();

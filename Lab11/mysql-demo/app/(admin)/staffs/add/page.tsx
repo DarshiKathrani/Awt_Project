@@ -1,6 +1,6 @@
 "use client";
 
-import { AddStaffAction } from "@/app/actions/AddStaffAction";
+import { AddStaffAction } from "../../actions/StaffActions/AddStaffAction";
 import React, { useState } from "react";
 import Link from "next/link";
 
