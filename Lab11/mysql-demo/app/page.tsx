@@ -38,7 +38,6 @@ export default function LoginPage() {
 
       setMessage('Login successful! Redirecting...');
 
-     //Neutral Route
       setTimeout(() => {
         router.push('/post-login');
       }, 300);

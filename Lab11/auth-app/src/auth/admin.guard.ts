@@ -13,11 +13,11 @@ export class AdminGuard implements CanActivate {
   constructor(private jwtService: JwtService) {}
 
   canActivate(context: ExecutionContext): boolean {
-    console.log('🔥 ADMIN GUARD EXECUTED');
+    console.log(' ADMIN GUARD EXECUTED');
 
     const request = context.switchToHttp().getRequest<Request>();
 
-    console.log('🍪 Cookies:', request.cookies);
+    console.log(' Cookies:', request.cookies);
 
     const token = request.cookies?.token;
 
@@ -32,7 +32,7 @@ export class AdminGuard implements CanActivate {
       throw new UnauthorizedException('Invalid token');
     }
 
-    console.log('🧾 JWT Payload:', payload);
+    console.log(' JWT Payload:', payload);
 
     if (payload.role !== 'admin') {
       throw new ForbiddenException('Admin access only');

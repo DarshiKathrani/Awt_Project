@@ -4,7 +4,6 @@ export function middleware(req: NextRequest) {
   const token = req.cookies.get('token')?.value;
   const pathname = req.nextUrl.pathname;
 
-  // public
   if (pathname === '/' || pathname === '/not-authorized') {
     return NextResponse.next();
   }
@@ -29,18 +28,16 @@ export function middleware(req: NextRequest) {
       return NextResponse.redirect(new URL('/admin', req.url));
     }
     if (role === 'staff') {
-      
+      return NextResponse.redirect(new URL('/dashboard', req.url));
     }
     if(role === 'meeting_convener') 
       return NextResponse.redirect(new URL('/meeting_convener', req.url));
     return NextResponse.redirect(new URL('/not-authorized', req.url));
   }
-
-  // 🔒 Strict isolation
   const ROLE_ROUTE: Record<string, string> = {
     admin: '/admin',
     staff: '/dashboard',
-    meeting_convener: '/dashboard',
+    meeting_convener: '/meeting_convener',
   };
 
   const allowedBase = ROLE_ROUTE[role];

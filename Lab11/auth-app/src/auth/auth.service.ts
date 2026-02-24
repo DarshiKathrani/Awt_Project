@@ -92,7 +92,7 @@ export class AuthService {
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // 4️⃣ Insert into users
+    //  Insert into users
     const userResult: any = await this.db.query(
       `INSERT INTO users (name, email, password, role)
        VALUES (?, ?, ?, ?)`,
@@ -110,7 +110,7 @@ export class AuthService {
     await this.db.query('COMMIT',[]);
 
     return { message: 'Staff and user created successfully' };
-  } catch (err) {
+  } catch (err) { 
     await this.db.query('ROLLBACK',[]);
     throw err;
   }

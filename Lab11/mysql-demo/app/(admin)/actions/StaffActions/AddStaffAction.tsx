@@ -13,7 +13,6 @@ async function AddStaffAction(formData: FormData) {
   const EmailAddress = formData.get("EmailAddress") as string;
   const Remarks = formData.get("Remarks") as string;
 
-  // NEW FIELDS (REQUIRED)
   const Password = formData.get("Password") as string;
   const Role = formData.get("Role") as "staff" | "meeting_convener";
 
