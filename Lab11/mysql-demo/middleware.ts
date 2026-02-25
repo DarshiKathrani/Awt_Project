@@ -31,13 +31,13 @@ export function middleware(req: NextRequest) {
       return NextResponse.redirect(new URL('/dashboard', req.url));
     }
     if(role === 'meeting_convener') 
-      return NextResponse.redirect(new URL('/meeting_convener', req.url));
+      return NextResponse.redirect(new URL('/convener-dashboard', req.url));
     return NextResponse.redirect(new URL('/not-authorized', req.url));
   }
   const ROLE_ROUTE: Record<string, string> = {
     admin: '/admin',
     staff: '/dashboard',
-    meeting_convener: '/meeting_convener',
+    meeting_convener: '/convener-dashboard',
   };
 
   const allowedBase = ROLE_ROUTE[role];
