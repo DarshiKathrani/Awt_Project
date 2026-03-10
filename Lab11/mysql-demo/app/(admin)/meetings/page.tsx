@@ -2,137 +2,177 @@ import React from "react";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import DeleteMeeting from "@/app/ui/DeleteMeeting";
+import Search from "@/app/ui/Search"; // Our new generic component
 import { meetings } from "@prisma/client";
+import { 
+  CalendarPlus, 
+  Clock, 
+  FileText, 
+  Eye, 
+  Edit2, 
+  SearchX, 
+  Calendar,
+  ChevronRight
+} from "lucide-react";
 
-export default async function GetAll() {
+export default async function GetAll({
+  searchParams,
+}: {
+  searchParams?: Promise<{ query?: string }>;
+}) {
+  // 1. Resolve search parameters
+  const params = await searchParams;
+  const query = params?.query || "";
+
+  // 2. Fetch filtered data from Prisma
   const rows = await prisma.meetings.findMany({
-    orderBy: { MeetingDate: 'desc'}
+    where: {
+      OR: [
+        { MeetingDescription: { contains: query } },
+      ],
+    },
+    orderBy: { MeetingDate: 'desc' }
   });
 
   return (
-    <div className="min-h-screen bg-gray-50/50 p-4 md:p-8">
-      <div className="max-w-6xl mx-auto">
+    <div className="min-h-screen bg-[#F8F9FB] p-4 md:p-10 font-sans">
+      <div className="max-w-7xl mx-auto space-y-8">
         
-        
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Meeting Hub</h1>
-            <p className="text-sm text-gray-500 mt-1">Review schedules, agendas, and attached minutes.</p>
+        {/* HEADER SECTION */}
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 border-b border-gray-200 pb-10">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2 text-indigo-600 mb-2">
+                <Calendar className="w-5 h-5" />
+                <span className="text-[10px] font-black uppercase tracking-[0.3em]">Governance Module</span>
+            </div>
+            <h1 className="text-4xl font-black text-gray-900 tracking-tight uppercase italic leading-none">
+              Meeting <span className="text-indigo-600 font-light not-italic">HUB</span>
+            </h1>
+            <p className="text-xs font-bold text-gray-400 uppercase tracking-[0.2em]">
+              Centralized repository for session logs and documentation
+            </p>
           </div>
 
           <Link
             href="/meetings/add"
-            className="inline-flex items-center justify-center bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl font-semibold transition-all shadow-sm shadow-indigo-200 active:scale-95"
+            className="inline-flex items-center justify-center bg-gray-900 hover:bg-indigo-600 text-white px-8 py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest transition-all shadow-xl shadow-gray-200 active:scale-95 shrink-0"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-            </svg>
-            Schedule Meeting
+            <CalendarPlus className="w-4 h-4 mr-2" />
+            Schedule New Session
           </Link>
         </div>
-        
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+
+        {/* SEARCH & FILTER AREA */}
+        <div className="flex flex-col md:flex-row items-center gap-4">
+          <div className="w-full md:w-1/3">
+            <Search placeholder="Search meetings by description..." />
+          </div>
+          <div className="hidden md:block text-[10px] font-black text-gray-300 uppercase tracking-widest">
+            Showing {rows.length} result(s)
+          </div>
+        </div>
+
+        {/* DATA TABLE CONTAINER */}
+        <div className="bg-white rounded-[2rem] shadow-sm border border-gray-200 overflow-hidden shadow-indigo-100/20">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-gray-50/50 border-b border-gray-100">
-                  <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider">Date & Time</th>
-                  <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider">Description</th>
-                  <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider">Status</th>
-                  <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider text-center">Docs</th>
-                  <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider text-right">Actions</th>
+                  <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Schedule</th>
+                  <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Description & ID</th>
+                  <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Status</th>
+                  <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] text-center">Docs</th>
+                  <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] text-right">Control</th>
                 </tr>
               </thead>
 
               <tbody className="divide-y divide-gray-50">
                 {rows.map((m: meetings) => (
-                  <tr key={m.MeetingID} className="group hover:bg-indigo-50/30 transition-colors">
+                  <tr key={m.MeetingID} className="group hover:bg-indigo-50/30 transition-all duration-300">
                     
-                    
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <div className="h-10 w-10 rounded-xl bg-indigo-50 flex flex-col items-center justify-center text-indigo-600 border border-indigo-100 mr-3">
-                           <span className="text-[10px] font-bold uppercase leading-none">
-                             {new Date(m.MeetingDate).toLocaleString('default', { month: 'short' })}
-                           </span>
-                           <span className="text-sm font-black">
-                             {new Date(m.MeetingDate).getDate()}
-                           </span>
+                    {/* Date Block */}
+                    <td className="px-8 py-6 whitespace-nowrap">
+                      <div className="flex items-center gap-4">
+                        <div className="h-12 w-12 rounded-2xl bg-white border border-gray-200 flex flex-col items-center justify-center shadow-sm group-hover:border-indigo-200 group-hover:scale-105 transition-all">
+                          <span className="text-[9px] font-black uppercase text-indigo-500 leading-none">
+                            {new Date(m.MeetingDate).toLocaleString('default', { month: 'short' })}
+                          </span>
+                          <span className="text-lg font-black text-gray-900">
+                            {new Date(m.MeetingDate).getDate()}
+                          </span>
                         </div>
                         <div>
-                          <div className="text-sm font-bold text-gray-900">
+                          <div className="flex items-center gap-1.5 text-sm font-black text-gray-800">
+                            <Clock className="w-3 h-3 text-indigo-400" />
                             {new Date(m.MeetingDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                           </div>
-                          <div className="text-xs text-gray-400">{new Date(m.MeetingDate).getFullYear()}</div>
+                          <div className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Year {new Date(m.MeetingDate).getFullYear()}</div>
                         </div>
                       </div>
                     </td>
 
-                    
-                    <td className="px-6 py-4">
-                      <div className="text-sm font-semibold text-gray-800 line-clamp-1">
-                        {m.MeetingDescription || "Untitled Meeting"}
+                    {/* Content */}
+                    <td className="px-8 py-6">
+                      <div className="text-sm font-black text-gray-900 uppercase italic tracking-tight line-clamp-1 group-hover:text-indigo-600 transition-colors">
+                        {m.MeetingDescription || "Untitled Session"}
                       </div>
-                      <div className="text-xs text-gray-400">ID: #{m.MeetingID}</div>
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className="text-[9px] font-bold text-gray-400 uppercase tracking-tighter bg-gray-100 px-2 py-0.5 rounded-md">
+                            MTG-{m.MeetingID.toString().padStart(4, '0')}
+                        </span>
+                      </div>
                     </td>
 
-                    
-                    <td className="px-6 py-4">
+                    {/* Status Badge */}
+                    <td className="px-8 py-6">
                       {m.IsCancelled ? (
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-red-100 text-red-700">
-                          Cancelled
+                        <span className="inline-flex items-center px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-[0.15em] bg-red-50 text-red-600 border border-red-100">
+                          Terminated
                         </span>
                       ) : (
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-green-100 text-green-700">
-                          Scheduled
+                        <span className="inline-flex items-center px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-[0.15em] bg-indigo-50 text-indigo-600 border border-indigo-100">
+                          Active
                         </span>
                       )}
                     </td>
 
-        
-<td className="px-4 py-3">
-  {m.DocumentPath ? (
-    <a
-      
-      href={m.DocumentPath}
-      download={m.DocumentPath.split('/').pop()} 
-      target="_self"
-      rel="noopener noreferrer"
-      className="inline-flex items-center justify-center w-8 h-8 bg-indigo-50 text-indigo-600 rounded-full hover:bg-indigo-600 hover:text-white transition-all shadow-sm border border-indigo-100"
-      title="Download document"
-    >
-      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-      </svg>
-    </a>
-  ) : (
-    <span className="text-gray-300">—</span>
-  )}
-</td>
+                    {/* Document Link */}
+                    <td className="px-8 py-6 text-center">
+                      {m.DocumentPath ? (
+                        <a
+                          href={m.DocumentPath}
+                          download 
+                          className="inline-flex items-center justify-center w-10 h-10 bg-gray-50 text-gray-400 rounded-xl hover:bg-indigo-600 hover:text-white transition-all border border-gray-100 hover:border-indigo-600 hover:shadow-lg hover:shadow-indigo-200"
+                        >
+                          <FileText className="w-5 h-5" />
+                        </a>
+                      ) : (
+                        <div className="w-10 h-10 rounded-xl border border-dashed border-gray-200 inline-flex items-center justify-center text-gray-200">
+                             —
+                        </div>
+                      )}
+                    </td>
 
-                    {/* Actions Column */}
-                    <td className="px-6 py-4 text-right">
+                    {/* Actions Group */}
+                    <td className="px-8 py-6">
                       <div className="flex items-center justify-end gap-2">
                         <Link
                           href={`/meetings/${m.MeetingID}`}
-                          className="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                          className="p-2.5 text-gray-400 hover:text-indigo-600 hover:bg-white rounded-xl transition-all border border-transparent hover:border-indigo-100 hover:shadow-sm"
                         >
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                          </svg>
+                          <Eye className="w-4.5 h-4.5" />
                         </Link>
 
                         <Link
                           href={`/meetings/edit/${m.MeetingID}`}
-                          className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                          className="p-2.5 text-gray-400 hover:text-green-600 hover:bg-white rounded-xl transition-all border border-transparent hover:border-green-100 hover:shadow-sm"
                         >
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                          </svg>
+                          <Edit2 className="w-4.5 h-4.5" />
                         </Link>
 
-                        <DeleteMeeting id={m.MeetingID} />
+                        <div className="pl-1 border-l border-gray-100">
+                            <DeleteMeeting id={m.MeetingID} />
+                        </div>
                       </div>
                     </td>
                   </tr>
@@ -141,11 +181,19 @@ export default async function GetAll() {
             </table>
           </div>
 
-          {/* Empty State */}
+          {/* EMPTY SEARCH STATE */}
           {rows.length === 0 && (
-            <div className="py-20 text-center">
-              <h3 className="text-gray-900 font-bold text-lg">No meetings found</h3>
-              <p className="text-gray-500 text-sm mt-1">Plan and schedule your first organizational meeting.</p>
+            <div className="py-32 text-center bg-white">
+              <div className="inline-flex items-center justify-center w-20 h-20 rounded-[2rem] bg-gray-50 mb-6 border border-gray-100 text-gray-200">
+                <SearchX className="w-10 h-10" />
+              </div>
+              <h3 className="text-gray-900 font-black uppercase text-lg tracking-tight">Data Sync Failed</h3>
+              <p className="text-gray-400 text-[10px] font-bold uppercase tracking-[0.3em] mt-3 max-w-xs mx-auto leading-relaxed">
+                No sessions match the current query string: <span className="text-indigo-500 italic">"{query}"</span>
+              </p>
+              <Link href="/meetings" className="inline-block mt-6 text-[10px] font-black text-indigo-600 uppercase tracking-widest hover:underline">
+                Clear all filters
+              </Link>
             </div>
           )}
         </div>

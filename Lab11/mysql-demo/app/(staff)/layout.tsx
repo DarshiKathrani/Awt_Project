@@ -14,7 +14,7 @@ export default async function StaffLayout({ children }: { children: React.ReactN
     const payloadJson = Buffer.from(payloadBase64, "base64").toString();
     payload = JSON.parse(payloadJson);
   } catch {
-    redirect("/login");
+    redirect("/");
   }
 
   if (payload.role !== "staff") redirect("/not-authorized");

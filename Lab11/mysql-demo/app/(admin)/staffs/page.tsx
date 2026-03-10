@@ -2,33 +2,58 @@ import React from "react";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import DeleteStaff from "@/app/ui/DeleteStaff";
+import SearchStaff from "@/app/ui/Search"; // Import our new component
 import { staff } from "@prisma/client";
+import { UserPlus, Mail, Phone, Eye, Edit2 } from "lucide-react";
 
-export default async function GetAll() {
+export default async function GetAll({
+  searchParams,
+}: {
+  searchParams?: Promise<{ query?: string }>;
+}) {
+  // Await the searchParams in Next.js 15+
+  const params = await searchParams;
+  const query = params?.query || "";
+
+  // Prisma Search Logic
   const rows = await prisma.staff.findMany({
+    where: {
+      OR: [
+        { StaffName: { contains: query} },
+        { EmailAddress: { contains: query} },
+        // If StaffID is a number, Prisma requires specific casting or skipping
+      ],
+    },
     orderBy: { StaffName: 'asc' }
   });
 
   return (
     <div className="min-h-screen bg-gray-50/50 p-4 md:p-8">
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-6xl mx-auto space-y-6">
         
         {/* Header Section */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-gray-200 pb-8">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Staff Directory</h1>
-            <p className="text-sm text-gray-500 mt-1">Manage employee profiles and access levels.</p>
+            <h1 className="text-3xl font-black text-gray-900 tracking-tight uppercase italic">
+              Staff <span className="text-blue-600">Directory</span>
+            </h1>
+            <p className="text-xs font-bold text-gray-400 uppercase tracking-[0.3em] mt-1">
+              Governance & Personnel Management
+            </p>
           </div>
 
           <Link
             href="/staffs/add"
-            className="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl font-semibold transition-all shadow-sm shadow-blue-200 active:scale-95"
+            className="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-bold transition-all shadow-sm shadow-blue-200 active:scale-95 text-sm"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-            </svg>
+            <UserPlus className="w-4 h-4 mr-2" />
             Add New Staff
           </Link>
+        </div>
+
+        {/* SEARCH BAR SECTION */}
+        <div className="flex items-center gap-4">
+          <SearchStaff />
         </div>
 
         {/* Table Container */}
@@ -37,62 +62,55 @@ export default async function GetAll() {
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-gray-50/50 border-b border-gray-100">
-                  <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider">Staff Member</th>
-                  <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider">Contact Info</th>
-                  <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider text-center">Actions</th>
+                  <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Staff Member</th>
+                  <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Contact Info</th>
+                  <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest text-center">Actions</th>
                 </tr>
               </thead>
 
               <tbody className="divide-y divide-gray-50">
                 {rows.map((s: staff) => (
                   <tr key={s.StaffID} className="group hover:bg-blue-50/30 transition-colors">
-                    
-                    {/* Name & ID Column */}
                     <td className="px-6 py-4">
                       <div className="flex items-center">
-                        <div className="h-10 w-10 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center text-gray-600 font-bold mr-3 border border-gray-200">
+                        <div className="h-10 w-10 rounded-xl bg-gray-100 flex items-center justify-center text-gray-600 font-black mr-4 border border-gray-200 group-hover:bg-white transition-colors">
                           {s.StaffName.charAt(0)}
                         </div>
                         <div>
-                          <div className="text-sm font-bold text-gray-900">{s.StaffName}</div>
-                          <div className="text-xs text-gray-400 font-medium">ID: #{s.StaffID}</div>
+                          <div className="text-sm font-bold text-gray-900 uppercase tracking-tight">{s.StaffName}</div>
+                          <div className="text-[10px] text-gray-400 font-bold">ID: #00{s.StaffID}</div>
                         </div>
                       </div>
                     </td>
 
-                    {/* Email & Mobile Column */}
                     <td className="px-6 py-4">
-                      <div className="text-sm text-gray-600 font-medium">{s.EmailAddress || "—"}</div>
-                      <div className="text-xs text-gray-400">{s.MobileNo || "No mobile added"}</div>
+                      <div className="flex flex-col gap-1">
+                        <div className="flex items-center gap-2 text-sm text-gray-600 font-medium">
+                          <Mail className="w-3 h-3 text-blue-400" /> {s.EmailAddress || "—"}
+                        </div>
+                        <div className="flex items-center gap-2 text-xs text-gray-400 uppercase font-bold tracking-tighter">
+                          <Phone className="w-3 h-3 text-gray-300" /> {s.MobileNo || "N/A"}
+                        </div>
+                      </div>
                     </td>
 
-                    {/* Actions Column */}
                     <td className="px-6 py-4">
-                      <div className="flex items-center justify-center gap-3">
+                      <div className="flex items-center justify-center gap-2">
                         <Link
                           href={`/staffs/${s.StaffID}`}
-                          className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                          title="View Details"
+                          className="p-2 text-gray-400 hover:text-blue-600 hover:bg-white rounded-lg transition-all border border-transparent hover:border-blue-100"
                         >
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                          </svg>
+                          <Eye className="w-4 h-4" />
                         </Link>
 
                         <Link
                           href={`/staffs/edit/${s.StaffID}`}
-                          className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
-                          title="Edit Staff"
+                          className="p-2 text-gray-400 hover:text-green-600 hover:bg-white rounded-lg transition-all border border-transparent hover:border-green-100"
                         >
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                          </svg>
+                          <Edit2 className="w-4 h-4" />
                         </Link>
 
-                        <div className="p-1">
-                           <DeleteStaff id={s.StaffID} />
-                        </div>
+                        <DeleteStaff id={s.StaffID} />
                       </div>
                     </td>
                   </tr>
@@ -101,16 +119,16 @@ export default async function GetAll() {
             </table>
           </div>
 
-          {/* Empty State */}
+          {/* Empty State / No Results */}
           {rows.length === 0 && (
-            <div className="py-20 text-center">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-50 mb-4">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                </svg>
+            <div className="py-24 text-center">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gray-50 mb-4 border border-gray-100">
+                <SearchStaff /> {/* This icon is actually fine inside the circle too */}
               </div>
-              <h3 className="text-gray-900 font-bold">No staff members found</h3>
-              <p className="text-gray-500 text-sm mt-1">Get started by adding your first employee to the system.</p>
+              <h3 className="text-gray-900 font-black uppercase tracking-tight">No records found</h3>
+              <p className="text-gray-400 text-xs font-bold uppercase tracking-widest mt-2">
+                Try adjusting your search for "{query}"
+              </p>
             </div>
           )}
         </div>

@@ -11,9 +11,7 @@ async function getAuthenticatedUser() {
     const payloadBase64 = token.split(".")[1];
     const payloadJson = Buffer.from(payloadBase64, "base64").toString();
     return JSON.parse(payloadJson) as { user_id: number; email: string; role: string };
-  } catch {
-    return null;
-  }
+  } catch { return null; }
 }
 
 export default async function StaffDashboard() {
@@ -24,158 +22,83 @@ export default async function StaffDashboard() {
     where: { user_id: user.user_id },
     include: {
       meetingmember: {
-        include: { 
-          meetings: {
-            include: { meetingtype: true } 
-          } 
-        },
+        include: { meetings: { include: { meetingtype: true } } },
         orderBy: { meetings: { MeetingDate: 'desc' } }
       }
     }
   });
 
-  if (!staff) return <div className="p-20 text-center font-black text-slate-400 uppercase tracking-widest">Profile Not Linked</div>;
+  if (!staff) return <div className="p-20 text-center font-bold text-slate-400">Profile Not Linked</div>;
 
-  const now = new Date();
   const totalMeetings = staff.meetingmember.length;
   const attendedCount = staff.meetingmember.filter(m => m.IsPresent).length;
-  const attendanceRate = totalMeetings > 0 ? (attendedCount / totalMeetings) * 100 : 0;
-
-  const upcomingMeetings = staff.meetingmember.filter(m => 
-    new Date(m.meetings.MeetingDate) >= now && !m.meetings.IsCancelled
-  );
-  
-  const pastMeetings = staff.meetingmember.filter(m => 
-    new Date(m.meetings.MeetingDate) < now
-  );
+  const attendanceRate = totalMeetings > 0 ? Math.round((attendedCount / totalMeetings) * 100) : 0;
 
   return (
-    <div className="min-h-screen p-4 md:p-8 font-sans">
-      <div className="max-w-7xl mx-auto space-y-8">
-        
-        {/* STATS SECTION */}
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          <div className="lg:col-span-3 bg-white rounded-[2.5rem] p-10 shadow-sm border border-slate-100 flex flex-col md:flex-row justify-between items-center relative overflow-hidden">
-            <div className="relative z-10 space-y-4">
-              <h1 className="text-5xl font-black text-slate-900 tracking-tight italic uppercase">
-                {staff.StaffName.split(' ')[0]}
-              </h1>
-              <p className="text-slate-400 font-bold text-xs uppercase tracking-[0.2em]">
-                Staff ID: {staff.StaffID} • {user.email}
-              </p>
-            </div>
-            
-            <div className="relative z-10 flex gap-4 mt-8 md:mt-0">
-               <div className="bg-slate-900 text-white p-7 rounded-[2.2rem] text-center w-36 shadow-2xl">
-                  <p className="text-3xl font-black italic">{totalMeetings}</p>
-                  <p className="text-[10px] uppercase font-black opacity-40">Records</p>
-               </div>
-               <div className="bg-white border-2 border-slate-100 text-slate-900 p-7 rounded-[2.2rem] text-center w-36">
-                  <p className="text-3xl font-black italic text-indigo-600">{attendedCount}</p>
-                  <p className="text-[10px] uppercase font-black opacity-40">Attended</p>
-               </div>
-            </div>
-          </div>
+    <div className="p-8 max-w-7xl mx-auto space-y-8">
+      {/* Header */}
+      <div className="flex justify-between items-end border-b pb-6">
+        <div>
+          <h1 className="text-3xl font-black text-gray-900 uppercase tracking-tight">Staff Portal</h1>
+          <p className="text-gray-500 text-sm font-medium">Welcome back, {staff.StaffName}.</p>
+        </div>
+      </div>
 
-          <div className="bg-indigo-600 rounded-[2.5rem] p-8 text-white flex flex-col items-center justify-center text-center shadow-xl">
-            <div className="text-[10px] font-black uppercase tracking-[0.3em] opacity-60 mb-4">Compliance</div>
-            <div className="text-6xl font-black italic">{Math.round(attendanceRate)}%</div>
-          </div>
+      {/* KPI Cards - Matching Admin Design */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatCard title="Total Records" value={totalMeetings} color="blue" />
+        <StatCard title="Attended" value={attendedCount} color="indigo" />
+        <StatCard title="Compliance" value={`${attendanceRate}%`} color="green" />
+        <StatCard title="Status" value={attendanceRate >= 75 ? "Good" : "Review"} color={attendanceRate >= 75 ? "purple" : "red"} />
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Activity Table - Matching Admin Design */}
+        <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+          <div className="p-4 bg-gray-50 border-b font-bold text-sm text-gray-700 uppercase tracking-wider">Attendance History</div>
+          <table className="w-full text-left text-sm">
+            <thead className="bg-gray-50/50">
+              <tr className="border-b">
+                <th className="p-4">Meeting</th>
+                <th className="p-4">Date</th>
+                <th className="p-4">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {staff.meetingmember.map((m) => (
+                <tr key={m.MeetingMemberID} className="border-b hover:bg-gray-50 transition-colors">
+                  <td className="p-4 font-medium">{m.meetings.MeetingDescription}</td>
+                  <td className="p-4 text-gray-500">{new Date(m.meetings.MeetingDate).toLocaleDateString()}</td>
+                  <td className="p-4">
+                    <span className={`px-2 py-1 rounded-full text-[10px] font-bold ${m.IsPresent ? 'bg-green-100 text-green-700' : 'bg-rose-100 text-rose-700'}`}>
+                      {m.IsPresent ? 'PRESENT' : 'ABSENT'}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2 space-y-10">
-            
-            {/* UPCOMING */}
-            <section className="space-y-6">
-              <h3 className="text-xl font-black text-slate-900 uppercase italic px-6 tracking-tight">Upcoming Meetings</h3>
-              <div className="space-y-4">
-                {upcomingMeetings.length > 0 ? upcomingMeetings.map((item) => (
-                  <Link 
-                    key={item.MeetingMemberID} 
-                    href={`/dashboard/meetings/${item.meetings.MeetingID}`}
-                    className="bg-white border-2 border-dashed border-indigo-100 p-6 rounded-[2rem] flex items-center justify-between hover:border-solid hover:border-indigo-400 transition-all group cursor-pointer"
-                  >
-                    <div className="flex items-center gap-6">
-                      <div className="text-indigo-600 font-black text-xl italic group-hover:scale-110 transition-transform">
-                        {new Date(item.meetings.MeetingDate).toLocaleDateString('en-US', { day: '2-digit', month: 'short' })}
-                      </div>
-                      <div>
-                        <h4 className="font-black text-slate-800 uppercase tracking-tight group-hover:text-indigo-600">
-                          {item.meetings.MeetingDescription || item.meetings.meetingtype.MeetingTypeName}
-                        </h4>
-                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">
-                          Starts: {new Date(item.meetings.MeetingDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-300 group-hover:bg-indigo-600 group-hover:text-white transition-all">
-                        →
-                    </div>
-                  </Link>
-                )) : (
-                  <div className="p-10 bg-slate-50 rounded-[2rem] text-center text-slate-400 font-bold italic text-sm">No future meetings scheduled.</div>
-                )}
-              </div>
-            </section>
-
-            {/* HISTORY */}
-            <section className="space-y-6">
-              <h3 className="text-xl font-black text-slate-900 uppercase italic px-6 tracking-tight">Meeting History</h3>
-              <div className="space-y-3">
-                {pastMeetings.map((record) => (
-                  <Link 
-                    key={record.MeetingMemberID} 
-                    href={`/dashboard/meetings/${record.meetings.MeetingID}`}
-                    className={`bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm flex items-center justify-between group transition-all hover:border-indigo-100 hover:shadow-md cursor-pointer ${record.meetings.IsCancelled ? 'opacity-60 grayscale' : ''}`}
-                  >
-                    <div className="flex items-center gap-6">
-                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-black text-[10px] ${record.meetings.IsCancelled ? 'bg-slate-200 text-slate-500' : record.IsPresent ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}`}>
-                        {record.meetings.IsCancelled ? 'CXL' : record.IsPresent ? 'PR' : 'AB'}
-                      </div>
-                      <div>
-                        <h4 className="font-black text-slate-800 uppercase text-sm tracking-tight group-hover:text-indigo-600">
-                          {record.meetings.MeetingDescription || record.meetings.meetingtype.MeetingTypeName}
-                        </h4>
-                        <p className="text-[10px] text-slate-400 font-bold uppercase mt-1">
-                          {new Date(record.meetings.MeetingDate).toLocaleDateString()}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="text-slate-300 group-hover:text-indigo-600 transition-colors">
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" /></svg>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            </section>
-          </div>
-
-          {/* SIDEBAR */}
-          <div className="space-y-6">
-            <h3 className="text-2xl font-black text-slate-900 uppercase italic px-6 tracking-tight">Status</h3>
-            <div className="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm space-y-8">
-              <div className="space-y-6">
-                <div className="flex items-center gap-4">
-                  <div className={`w-2 h-2 rounded-full ${attendanceRate >= 75 ? 'bg-emerald-500' : 'bg-amber-500'}`}></div>
-                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                    Account: {attendanceRate >= 75 ? 'Good Standing' : 'Needs Review'}
-                  </p>
-                </div>
-                <p className="text-slate-600 text-xs font-bold leading-relaxed">
-                  Linked to <strong>{staff.StaffName}</strong>. For data corrections, contact your system administrator.
-                </p>
-              </div>
-              <a 
-                href={`mailto:admin@system.com?subject=Inquiry: ${staff.StaffName}`}
-                className="w-full bg-slate-900 text-white py-4 rounded-[1.5rem] font-black text-[10px] uppercase tracking-[0.2em] hover:bg-indigo-600 transition-all shadow-lg flex justify-center"
-              >
-                Contact Admin
-              </a>
-            </div>
+        {/* Quick Actions */}
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+          <h2 className="font-bold mb-4 text-sm uppercase text-gray-600">Quick Actions</h2>
+          <div className="flex flex-col gap-2">
+            <Link href="/dashboard/profile" className="p-2 bg-gray-50 text-gray-700 rounded text-center font-medium hover:bg-gray-100 transition-colors">View Profile</Link>
+            <a href="mailto:admin@system.com" className="p-2 bg-indigo-50 text-indigo-700 rounded text-center font-medium hover:bg-indigo-100 transition-colors">Contact Admin</a>
           </div>
         </div>
       </div>
     </div>
   );
-}   
+}
+
+function StatCard({ title, value, color }: { title: string; value: any; color: string }) {
+  const colors: any = { blue: "text-blue-600", indigo: "text-indigo-600", green: "text-green-600", purple: "text-purple-600", red: "text-red-600" };
+  return (
+    <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+      <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{title}</p>
+      <p className={`text-2xl font-black ${colors[color]}`}>{value}</p>
+    </div>
+  );
+}

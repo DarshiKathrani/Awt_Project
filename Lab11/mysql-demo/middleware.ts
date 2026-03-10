@@ -53,5 +53,6 @@ export const config = {
     '/post-login',
     '/admin/:path*',
     '/dashboard/:path*',
+    '/convener-dashboard/:path*'
   ],
 };

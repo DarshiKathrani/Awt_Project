@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { LayoutDashboard, Calendar, Users, LogOut, Compass } from "lucide-react";
+import { LogoutAction } from "../(admin)/actions/AuthActions/LogoutAction";
 
 export default function ConvenerLayout({ children }: { children: React.ReactNode }) {
   const navItems = [
@@ -32,9 +33,11 @@ export default function ConvenerLayout({ children }: { children: React.ReactNode
         </nav>
 
         <div className="p-8 border-t border-slate-100">
-          <Link href="/login" className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest text-rose-400 hover:text-rose-600 transition-colors">
-            <LogOut className="w-4 h-4" /> Sign Out
-          </Link>
+          <form action={LogoutAction}>
+          <button className="px-6 py-3 bg-red-600 text-white rounded-xl font-bold text-sm hover:bg-red-700 transition-all">
+            Sign Out
+          </button>
+          </form>
         </div>
       </aside>
 

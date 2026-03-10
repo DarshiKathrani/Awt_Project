@@ -139,16 +139,42 @@ export default async function MarkingSheet({ params }: { params: Promise<{ id: s
       </form>
 
       {/* VANILLA JAVASCRIPT FOR TOGGLE */}
-      <script dangerouslySetInnerHTML={{
+     <script dangerouslySetInnerHTML={{
         __html: `
-          const btn = document.getElementById('toggle-all-btn');
-          if (btn) {
-            btn.addEventListener('click', function() {
+          (function() {
+            const toggleHandler = (e) => {
+              const btn = e.target.closest('#toggle-all-btn');
+              if (!btn) return;
+
+              // Prevent form submission if the button is inside the form
+              e.preventDefault();
+
               const checkboxes = document.querySelectorAll('.attendance-checkbox');
-              const allChecked = Array.from(checkboxes).every(cb => cb.checked);
-              checkboxes.forEach(cb => cb.checked = !allChecked);
-            });
-          }
+              if (checkboxes.length === 0) return;
+
+              // Check the state of the first checkbox to decide the action
+              // If the first one is checked, we uncheck everything. 
+              // If it's unchecked, we check everything.
+              const shouldCheck = !checkboxes[0].checked;
+              
+              checkboxes.forEach(cb => {
+                cb.checked = shouldCheck;
+                // Force the UI to update the "emerald" toggle state
+                cb.dispatchEvent(new Event('change', { bubbles: true }));
+              });
+
+              // Update the button text for visual feedback
+              const label = btn.querySelector('span') || btn;
+              if (label) {
+                label.textContent = shouldCheck ? 'Uncheck All' : 'Toggle All';
+              }
+            };
+
+            // Event Delegation: Attach to document so it survives Next.js navigation
+            // We use { passive: false } to ensure e.preventDefault() works
+            document.removeEventListener('click', toggleHandler);
+            document.addEventListener('click', toggleHandler);
+          })();
         `
       }} />
     </div>
