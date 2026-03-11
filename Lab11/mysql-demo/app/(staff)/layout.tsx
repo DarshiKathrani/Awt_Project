@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { LogOut, LayoutDashboard, CalendarDays } from "lucide-react";
+import { LogoutAction } from "../(admin)/actions/AuthActions/LogoutAction";
 
 export default async function StaffLayout({ children }: { children: React.ReactNode }) {
   const cookieStore = await cookies();
@@ -20,8 +22,8 @@ export default async function StaffLayout({ children }: { children: React.ReactN
   if (payload.role !== "staff") redirect("/not-authorized");
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <nav className="bg-white/80 backdrop-blur-md border-b border-slate-100 px-8 py-5 sticky top-0 z-50">
+    <div className="min-h-screen bg-[#F8F9FB]">
+      <nav className="bg-white border-b border-gray-100 px-8 py-4 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           
           <Link href="/dashboard" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
@@ -32,31 +34,35 @@ export default async function StaffLayout({ children }: { children: React.ReactN
           </Link>
 
           <div className="hidden md:flex gap-10 items-center">
-            <Link href="/dashboard" className="text-[11px] font-black uppercase tracking-[0.2em] text-indigo-600">
-              Overview
+            <Link href="/dashboard" className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-indigo-600 hover:text-indigo-700 transition-colors">
+                <LayoutDashboard className="w-3 h-3" /> Overview
             </Link>
-            <Link href="/dashboard/archive" className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-slate-900 transition-colors">
-              Meetings
+            <Link href="/dashboard/archive" className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-slate-900 transition-colors">
+                <CalendarDays className="w-3 h-3" /> Meetings
             </Link>
           </div>
 
-          <div className="flex items-center gap-4">
-             <div className="text-right hidden sm:block">
-                <p className="text-[10px] font-black text-slate-900 uppercase leading-none">Logged In</p>
-                <p className="text-[10px] font-bold text-slate-400">{payload.name || "Staff Member"}</p>
-             </div>
-             <button className="w-10 h-10 rounded-full bg-slate-100 border-2 border-white shadow-sm flex items-center justify-center hover:ring-4 ring-indigo-50 transition-all">
-                <span className="text-[10px] font-black text-slate-500 uppercase">
-                  {payload.name ? payload.name.substring(0, 2) : 'ST'}
-                </span>
-             </button>
+          <div className="flex items-center gap-6">
+            <div className="text-right hidden sm:block">
+              <p className="text-[10px] font-black text-slate-900 uppercase leading-none">Logged In</p>
+              <p className="text-[10px] font-bold text-slate-400">{payload.name || "Staff Member"}</p>
+            </div>
+
+            {/* Logout Action */}
+            <form action={LogoutAction}>
+              <button 
+                type="submit"
+                className="w-10 h-10 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center hover:bg-red-50 hover:border-red-100 hover:text-red-600 transition-all group"
+                title="Sign Out"
+              >
+                <LogOut className="w-4 h-4 text-slate-400 group-hover:text-red-600 transition-colors" />
+              </button>
+            </form>
           </div>
         </div>
       </nav>
 
-      <main>
-        {children}
-      </main>
+      <main>{children}</main>
     </div>
   );
 }

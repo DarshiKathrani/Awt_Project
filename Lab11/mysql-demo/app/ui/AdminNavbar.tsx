@@ -4,6 +4,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LogoutAction } from "../(admin)/actions/AuthActions/LogoutAction";
+import { LogOut } from "lucide-react";
 
 export default function AdminNavbar() {
   const pathname = usePathname();
@@ -62,12 +63,13 @@ export default function AdminNavbar() {
             <div className="h-10 w-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold shadow-md shadow-blue-200">
               AD
             </div>
-            <form action={LogoutAction}>
-              <button
+             <form action={LogoutAction}>
+              <button 
                 type="submit"
-                className="text-sm font-bold text-red-600 hover:text-red-700 transition-colors"
+                className="w-10 h-10 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center hover:bg-red-50 hover:border-red-100 hover:text-red-600 transition-all group"
+                title="Sign Out"
               >
-                Logout
+                <LogOut className="w-4 h-4 text-slate-400 group-hover:text-red-600 transition-colors" />
               </button>
             </form>
           </div>

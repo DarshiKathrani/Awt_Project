@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { LayoutDashboard, Calendar, Users, LogOut, Compass } from "lucide-react";
+import { LayoutDashboard, Calendar, Users, Compass, LogOut } from "lucide-react";
 import { LogoutAction } from "../(admin)/actions/AuthActions/LogoutAction";
 
 export default function ConvenerLayout({ children }: { children: React.ReactNode }) {
@@ -34,10 +34,15 @@ export default function ConvenerLayout({ children }: { children: React.ReactNode
 
         <div className="p-8 border-t border-slate-100">
           <form action={LogoutAction}>
-          <button className="px-6 py-3 bg-red-600 text-white rounded-xl font-bold text-sm hover:bg-red-700 transition-all">
-            Sign Out
-          </button>
-          </form>
+              <button 
+                type="submit"
+                className="w-10 h-10 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center hover:bg-red-50 hover:border-red-100 hover:text-red-600 transition-all group"
+                title="Sign Out"
+              >
+                Sign Out
+                <LogOut className="w-4 h-4 text-slate-400 group-hover:text-red-600 transition-colors" />
+              </button>
+            </form>
         </div>
       </aside>
 
