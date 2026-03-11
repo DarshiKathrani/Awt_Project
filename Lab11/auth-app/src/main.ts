@@ -3,6 +3,8 @@ import { AppModule } from './app.module';
 import cookieParser from 'cookie-parser';
 import { JwtService } from '@nestjs/jwt';
 import { AdminGuard } from './auth/admin.guard';
+import * as dotenv from 'dotenv';
+dotenv.config();
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
