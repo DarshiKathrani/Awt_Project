@@ -7,6 +7,8 @@ export class DatabaseService {
   private pool;
 
   constructor() {
+    console.log("DB HOST:", process.env.DB_HOST);
+
     this.pool = mysql.createPool({
       host: process.env.DB_HOST,
       port: Number(process.env.DB_PORT),
