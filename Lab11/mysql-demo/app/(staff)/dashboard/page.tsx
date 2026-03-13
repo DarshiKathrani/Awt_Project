@@ -16,7 +16,7 @@ async function getAuthenticatedUser() {
 
 export default async function StaffDashboard() {
   const user = await getAuthenticatedUser();
-  if (!user) redirect("/login");
+  if (!user) redirect("/");
 
   const staff = await prisma.staff.findUnique({
     where: { user_id: user.user_id },
