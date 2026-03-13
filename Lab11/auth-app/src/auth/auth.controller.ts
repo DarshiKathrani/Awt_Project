@@ -31,7 +31,7 @@ export class AuthController {
   path: '/',
 });
 
-    return { message: 'Login successful' };
+     return { token: result.token };
   }
 
   @Post('logout')
