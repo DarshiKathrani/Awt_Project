@@ -28,6 +28,8 @@ export default function LoginPage() {
     });
 
     const data = await res.json();
+    console.log("LOGIN RESPONSE:", data);
+
 
     if (!res.ok) {
       setMessage(data.message || 'Invalid credentials');
