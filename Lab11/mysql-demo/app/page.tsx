@@ -20,7 +20,9 @@ export default function LoginPage() {
   try {
     const res = await fetch('https://awt-project-glqp.onrender.com/auth/login', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+      },
       credentials: 'include',
       body: JSON.stringify({ email, password }),
     });
@@ -32,25 +34,26 @@ export default function LoginPage() {
       return;
     }
 
-    setMessage('Login successful! Redirecting...');
+    if (!data.token) {
+      setMessage('Login failed. Token not received.');
+      return;
+    }
 
-    // decode role from JWT returned by backend
+    // decode JWT
     const payload = JSON.parse(atob(data.token.split('.')[1]));
     const role = payload.role;
 
-    setTimeout(() => {
-      if (role === 'admin') {
-        router.push('/admin');
-      } else if (role === 'staff') {
-        router.push('/dashboard');
-      } else if (role === 'meeting_convener') {
-        router.push('/convener-dashboard');
-      } else {
-        router.push('/not-authorized');
-      }
-    }, 300);
+    setMessage('Login successful! Redirecting...');
 
-  } catch {
+    setTimeout(() => {
+      if (role === 'admin') router.push('/admin');
+      else if (role === 'staff') router.push('/dashboard');
+      else if (role === 'meeting_convener') router.push('/convener-dashboard');
+      else router.push('/not-authorized');
+    }, 400);
+
+  } catch (error) {
+    console.error('Login error:', error);
     setMessage('Server error. Please try again later.');
   } finally {
     setLoading(false);
