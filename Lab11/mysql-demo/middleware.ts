@@ -13,14 +13,12 @@ export function middleware(req: NextRequest) {
   }
 
   let role: string;
-  try {
-    const payload = JSON.parse(
-      Buffer.from(token.split('.')[1], 'base64').toString()
-    );
-    role = payload.role;
-  } catch {
-    return NextResponse.redirect(new URL('/', req.url));
-  }
+ try {
+  const payload = JSON.parse(atob(token.split('.')[1]));
+  role = payload.role;
+} catch {
+  return NextResponse.redirect(new URL('/', req.url));
+}
 
   
   if (pathname === '/post-login') {
