@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import AdminNavbar from "../ui/AdminNavbar";
 
@@ -11,6 +11,7 @@ export default function AdminLayout({
 }) {
 
   const router = useRouter();
+  const [checked, setChecked] = useState(false);
 
   useEffect(() => {
 
@@ -20,22 +21,30 @@ export default function AdminLayout({
       ?.split("=")[1];
 
     if (!token) {
-      router.push("/");
+      router.replace("/");
       return;
     }
 
     try {
+
       const payload = JSON.parse(atob(token.split(".")[1]));
 
       if (payload.role !== "admin") {
-        router.push("/not-authorized");
+        router.replace("/not-authorized");
+        return;
       }
 
+      setChecked(true);
+
     } catch {
-      router.push("/");
+      router.replace("/");
     }
 
   }, []);
+
+  if (!checked) {
+    return null;
+  }
 
   return (
     <>
