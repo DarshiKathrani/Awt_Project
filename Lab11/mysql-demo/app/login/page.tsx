@@ -22,7 +22,7 @@ export default function LoginPage() {
 
     const data = await res.json();
     setMessage(data.message);
-      window.location.href = '/admin';
+      window.location.href = '/post-login';
   };
 
   return (
