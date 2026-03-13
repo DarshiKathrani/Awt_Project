@@ -25,7 +25,7 @@ export class AuthController {
 
 
     res.cookie('token', result.token, {
-  httpOnly: true,
+  httpOnly: false,
   sameSite: 'none',
   secure: true,
   path: '/',
