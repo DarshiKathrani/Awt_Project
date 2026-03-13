@@ -1,33 +1,44 @@
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
+'use client';
+
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import AdminNavbar from "../ui/AdminNavbar";
 
 type Role = 'admin' | 'meeting_convener' | 'staff';
 
-export default async function AdminLayout({
+export default function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const cookieStore = await cookies();
-  const token = cookieStore.get("token");
 
-  if (!token) {
-    redirect("/");
-  }
+  const router = useRouter();
 
-  let payload: { role: Role };
+  useEffect(() => {
 
-  try {
-    const payloadBase64 = token.value.split(".")[1];
-    const payloadJson = Buffer.from(payloadBase64, "base64").toString();
-    payload = JSON.parse(payloadJson);
-  } catch {
-    redirect("/");
-  }
-  if (payload.role !== "admin") {
-    redirect("/not-authorized");
-  }
+    const cookie = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith("token="));
+
+    if (!cookie) {
+      router.push("/");
+      return;
+    }
+
+    try {
+      const token = cookie.split("=")[1];
+      const payload = JSON.parse(atob(token.split(".")[1]));
+      const role: Role = payload.role;
+
+      if (role !== "admin") {
+        router.push("/not-authorized");
+      }
+
+    } catch {
+      router.push("/");
+    }
+
+  }, []);
 
   return (
     <>
