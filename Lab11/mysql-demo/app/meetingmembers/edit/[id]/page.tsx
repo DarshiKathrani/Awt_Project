@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import EditMeetingMemberAction from "@/app/(admin)/actions/MeetingMemberActions/EditMeetingMemberAction";
-
+export const dynamic = "force-dynamic";
 async function EditUser({ params }: { params: { id: string } }) {
   const {id} = await params;
   const data = await prisma.meetingmember.findFirst({

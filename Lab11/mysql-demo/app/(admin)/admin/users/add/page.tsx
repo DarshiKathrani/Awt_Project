@@ -15,7 +15,7 @@ export default function AddUserPage() {
     setMessage('');
 
     try {
-      const res = await fetch('http://localhost:3000/auth/register', {
+      const res = await fetch('https://awt-project-glqp.onrender.com/auth/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

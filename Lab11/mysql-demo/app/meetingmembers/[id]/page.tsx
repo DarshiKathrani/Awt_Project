@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { meetings } from "@prisma/client";
-
+export const dynamic = "force-dynamic";
 export default async function GetById({
   params,
 }: {
