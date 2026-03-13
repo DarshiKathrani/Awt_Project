@@ -28,8 +28,6 @@ export default function LoginPage() {
     });
 
     const data = await res.json();
-    console.log("LOGIN RESPONSE:", data);
-
 
     if (!res.ok) {
       setMessage(data.message || 'Invalid credentials');
@@ -41,18 +39,29 @@ export default function LoginPage() {
       return;
     }
 
-    // decode JWT
-    const payload = JSON.parse(atob(data.token.split('.')[1]));
+    // SAFE JWT DECODE (works in production)
+    const base64Url = data.token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const payload = JSON.parse(atob(base64));
     const role = payload.role;
+
+    console.log("ROLE:", role);
 
     setMessage('Login successful! Redirecting...');
 
-    setTimeout(() => {
-      if (role === 'admin') router.push('/admin');
-      else if (role === 'staff') router.push('/dashboard');
-      else if (role === 'meeting_convener') router.push('/convener-dashboard');
-      else router.push('/not-authorized');
-    }, 400);
+    // redirect based on role
+    if (role === 'admin') {
+      router.push('/admin');
+    }
+    else if (role === 'staff') {
+      router.push('/dashboard');
+    }
+    else if (role === 'meeting_convener') {
+      router.push('/convener-dashboard');
+    }
+    else {
+      router.push('/not-authorized');
+    }
 
   } catch (error) {
     console.error('Login error:', error);
