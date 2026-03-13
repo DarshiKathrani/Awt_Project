@@ -50,18 +50,18 @@ export default function LoginPage() {
     setMessage('Login successful! Redirecting...');
 
     // redirect based on role
-    if (role === 'admin') {
-      router.push('/admin');
-    }
-    else if (role === 'staff') {
-      router.push('/dashboard');
-    }
-    else if (role === 'meeting_convener') {
-      router.push('/convener-dashboard');
-    }
-    else {
-      router.push('/not-authorized');
-    }
+   if (role === 'admin') {
+  window.location.href = '/admin';
+}
+else if (role === 'staff') {
+  window.location.href = '/dashboard';
+}
+else if (role === 'meeting_convener') {
+  window.location.href = '/convener-dashboard';
+}
+else {
+  window.location.href = '/not-authorized';
+}
 
   } catch (error) {
     console.error('Login error:', error);
