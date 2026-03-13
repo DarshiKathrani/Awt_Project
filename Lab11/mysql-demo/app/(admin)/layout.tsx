@@ -4,8 +4,6 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import AdminNavbar from "../ui/AdminNavbar";
 
-type Role = 'admin' | 'meeting_convener' | 'staff';
-
 export default function AdminLayout({
   children,
 }: {
@@ -16,21 +14,20 @@ export default function AdminLayout({
 
   useEffect(() => {
 
-    const cookie = document.cookie
+    const token = document.cookie
       .split("; ")
-      .find((row) => row.startsWith("token="));
+      .find((row) => row.startsWith("token="))
+      ?.split("=")[1];
 
-    if (!cookie) {
+    if (!token) {
       router.push("/");
       return;
     }
 
     try {
-      const token = cookie.split("=")[1];
       const payload = JSON.parse(atob(token.split(".")[1]));
-      const role: Role = payload.role;
 
-      if (role !== "admin") {
+      if (payload.role !== "admin") {
         router.push("/not-authorized");
       }
 
