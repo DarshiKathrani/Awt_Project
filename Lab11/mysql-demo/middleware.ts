@@ -19,7 +19,7 @@ export function middleware(req: NextRequest) {
 
 export const config = {
   matcher: [
-    '/post-login',
+
     '/admin/:path*',
     '/dashboard/:path*',
     '/convener-dashboard/:path*'
