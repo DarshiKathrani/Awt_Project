@@ -25,11 +25,11 @@ export class AuthController {
 
 
     res.cookie('token', result.token, {
-      httpOnly: true,
-      sameSite: 'lax',
-      secure: false, 
-      path: '/',
-    });
+  httpOnly: true,
+  sameSite: 'none',
+  secure: true,
+  path: '/',
+});
 
     return { message: 'Login successful' };
   }
