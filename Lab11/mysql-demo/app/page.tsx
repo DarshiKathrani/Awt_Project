@@ -12,38 +12,50 @@ export default function LoginPage() {
 
   const router = useRouter();
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setMessage('');
+ const handleLogin = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setLoading(true);
+  setMessage('');
 
-    try {
-      const res = await fetch('https://awt-project-glqp.onrender.com/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ email, password }),
-      });
+  try {
+    const res = await fetch('https://awt-project-glqp.onrender.com/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ email, password }),
+    });
 
-      const data = await res.json();
+    const data = await res.json();
 
-      if (!res.ok) {
-        setMessage(data.message || 'Invalid credentials');
-        return;
-      }
-
-      setMessage('Login successful! Redirecting...');
-      setTimeout(() => {
-        router.push('/post-login');
-      }, 300);
-
-    } catch {
-      setMessage('Server error. Please try again later.');
-    } finally {
-      setLoading(false);
+    if (!res.ok) {
+      setMessage(data.message || 'Invalid credentials');
+      return;
     }
-  };
 
+    setMessage('Login successful! Redirecting...');
+
+    // decode role from JWT returned by backend
+    const payload = JSON.parse(atob(data.token.split('.')[1]));
+    const role = payload.role;
+
+    setTimeout(() => {
+      if (role === 'admin') {
+        router.push('/admin');
+      } else if (role === 'staff') {
+        router.push('/dashboard');
+      } else if (role === 'meeting_convener') {
+        router.push('/convener-dashboard');
+      } else {
+        router.push('/not-authorized');
+      }
+    }, 300);
+
+  } catch {
+    setMessage('Server error. Please try again later.');
+  } finally {
+    setLoading(false);
+  }
+};
   return (
     <div className="min-h-screen bg-[#F8F9FB] flex items-center justify-center px-4 relative overflow-hidden font-sans">
       {/* Decorative Background Elements */}
