@@ -2,7 +2,7 @@ import React from 'react'
 import { prisma } from "@/lib/prisma";
 import EditMeetingTypeAction from '@/app/(admin)/actions/MeetingTypeActions/EditMeetingTypeAction';
 import Link from 'next/link';
-
+export const dynamic = "force-dynamic";
 async function EditUser({params}:{params:Promise<{id:string}>}) {
     const {id} = await params;
     const data = await prisma.meetingtype.findFirst({

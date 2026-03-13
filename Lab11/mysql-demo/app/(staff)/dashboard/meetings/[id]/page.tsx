@@ -10,7 +10,7 @@ import {
   Download,
 } from "lucide-react"; 
 import Link from "next/link";
-
+export const dynamic = "force-dynamic";
 async function getAuth() {
   const cookieStore = await cookies();
   const token = cookieStore.get("token")?.value;

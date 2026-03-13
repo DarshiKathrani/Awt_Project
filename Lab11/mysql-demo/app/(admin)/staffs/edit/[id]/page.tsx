@@ -3,6 +3,8 @@ import { prisma } from "@/lib/prisma";
 import EditStaffAction from '@/app/(admin)/actions/StaffActions/EditStaffAction';
 import Link from 'next/link';
 
+export const dynamic = "force-dynamic";
+
 const countryCodes = [
   { code: "+1", label: "US/CA", flag: "🇺🇸" },
   { code: "+44", label: "UK", flag: "🇬🇧" },

@@ -3,6 +3,7 @@ import { AssignMemberAction } from "@/app/actions/attendance";
 import Link from "next/link";
 import { ArrowLeft, Users, Search, CheckCircle2 } from "lucide-react";
 
+export const dynamic = "force-dynamic";
 export default async function AssignMembers({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const meetingId = Number(id);

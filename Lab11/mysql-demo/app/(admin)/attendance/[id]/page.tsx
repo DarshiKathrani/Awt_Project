@@ -3,6 +3,7 @@ import { SaveAttendanceAction } from "../../actions/AttendanceActions/SaveAttend
 import Link from "next/link";
 import AttendanceToggle from "@/app/components/AttendanceToggle"; 
 
+export const dynamic = "force-dynamic";
 export default async function MarkingSheet({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const meetingId = Number(id);

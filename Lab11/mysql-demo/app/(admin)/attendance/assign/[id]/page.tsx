@@ -2,6 +2,9 @@ import { prisma } from "@/lib/prisma";
 import { AssignMemberAction } from "@/app/(admin)/actions/AttendanceActions/AssignMemberAction";
 import Link from "next/link";
 
+
+export const dynamic = "force-dynamic";
+
 export default async function AssignMembers({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const meetingId = Number(id);

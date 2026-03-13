@@ -3,6 +3,7 @@ import { SaveAttendanceAction } from "@/app/actions/attendance";
 import Link from "next/link";
 import { ArrowLeft, UserCheck, CheckSquare, Users, UserMinus, UserCheck2 } from "lucide-react";
 
+export const dynamic = "force-dynamic";
 export default async function MarkingSheet({ params }: { params: Promise<{ id: string }> }) {
   // 1. Await params to prevent Next.js 15 'NaN' errors
   const resolvedParams = await params;
