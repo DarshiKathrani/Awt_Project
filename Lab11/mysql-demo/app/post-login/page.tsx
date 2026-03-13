@@ -1,34 +1,40 @@
-export const dynamic = "force-dynamic";
-export const fetchCache = "force-no-store";
+'use client';
 
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
+import { useEffect } from "react";
 
-export default async function PostLogin() {
-  const cookieStore = await cookies();  
-  const token = cookieStore.get("token")?.value;
+export default function PostLogin() {
 
-  if (!token) {
-    redirect("/");
-  }
+  useEffect(() => {
+    const token = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith("token="))
+      ?.split("=")[1];
 
-  const payload = JSON.parse(
-    Buffer.from(token.split(".")[1], "base64").toString()
-  );
+    if (!token) {
+      window.location.href = "/";
+      return;
+    }
 
-  const role = payload.role;
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    const role = payload.role;
 
-  if (role === "admin") {
-    redirect("/admin");
-  }
+    if (role === "admin") {
+      window.location.href = "/admin";
+      return;
+    }
 
-  if (role === "staff") {
-    redirect("/dashboard");
-  }
+    if (role === "staff") {
+      window.location.href = "/dashboard";
+      return;
+    }
 
-  if (role === "meeting_convener") {
-    redirect("/convener-dashboard");
-  }
+    if (role === "meeting_convener") {
+      window.location.href = "/convener-dashboard";
+      return;
+    }
 
-  redirect("/not-authorized");
+    window.location.href = "/not-authorized";
+  }, []);
+
+  return <p>Logging you in...</p>;
 }
