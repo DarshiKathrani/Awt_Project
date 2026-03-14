@@ -87,7 +87,7 @@ export default async function GetAll({
               </thead>
 
               <tbody className="divide-y divide-gray-50">
-                {rows.map((m: meetings) => (
+                {rows?.map((m: meetings) => (
                   <tr key={m.MeetingID} className="group hover:bg-indigo-50/30 transition-all duration-300">
                     
                     {/* Date Block */}
