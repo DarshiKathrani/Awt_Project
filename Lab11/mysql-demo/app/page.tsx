@@ -23,7 +23,8 @@ export default function LoginPage() {
       headers: {
         'Content-Type': 'application/json',
       },
-      credentials: 'include',
+      // Keep this to allow the backend to try setting the cookie too
+      credentials: 'include', 
       body: JSON.stringify({ email, password }),
     });
 
@@ -39,22 +40,35 @@ export default function LoginPage() {
       return;
     }
 
-    // SAFE JWT DECODE (works in production)
+    // --- STEP 1: MANUALLY SET THE COOKIE FOR VERCEL DOMAIN ---
+    // This is the "Magic Fix" for cross-domain redirection loops.
+    // It saves the token to the current domain (Vercel) so your Layouts can see it.
+    document.cookie = `token=${data.token}; path=/; max-age=86400; SameSite=Lax; Secure`;
+
+    // --- STEP 2: SAFE JWT DECODE ---
+    // Standard atob can fail on some JWTs. This replaces URL-safe characters first.
     const base64Url = data.token.split('.')[1];
     const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
     const payload = JSON.parse(atob(base64));
     const role = payload.role;
 
-    console.log("ROLE:", role);
-
+    console.log("Authenticated Role:", role);
     setMessage('Login successful! Redirecting...');
 
-    // redirect based on role
+    // --- STEP 3: REDIRECT WITH SMALL DELAY ---
+    // We use a 100ms delay to ensure the browser has finished writing 
+    // the cookie to disk before the next page's Layout tries to read it.
     setTimeout(() => {
-  if (role === 'admin') router.push('/admin');
-  else if (role === 'staff') router.push('/dashboard');
-  else router.push('/not-authorized');
-}, 100);
+      if (role === 'admin') {
+        router.push('/admin');
+      } else if (role === 'staff') {
+        router.push('/dashboard');
+      } else if (role === 'meeting_convener') {
+        router.push('/convener-dashboard');
+      } else {
+        router.push('/not-authorized');
+      }
+    }, 100);
 
   } catch (error) {
     console.error('Login error:', error);
