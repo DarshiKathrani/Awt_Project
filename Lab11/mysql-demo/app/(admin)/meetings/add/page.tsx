@@ -57,7 +57,7 @@ export default function AddMeetingForm({ meetingTypes }: Props) {
                 required
               >
                 <option value="">Select Type</option>
-                {meetingTypes.map((type) => (
+                {meetingTypes?.map((type) => (
                   <option key={type.MeetingTypeID} value={type.MeetingTypeID}>
                     {type.MeetingTypeName}
                   </option>
