@@ -2,7 +2,6 @@
 
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
-import { revalidatePath } from "next/cache";
 
 export async function UpdateMeetingAction(id: number, formData: FormData) {
   try {
@@ -11,8 +10,9 @@ export async function UpdateMeetingAction(id: number, formData: FormData) {
     const MeetingDescription = formData.get("MeetingDescription") as string | null;
     const DocumentPath = formData.get("DocumentPath") as string | null;
 
+    // Use the primary key defined in your schema
     await prisma.meetings.update({
-      where: {MeetingID: id },
+      where: { MeetingID: id }, 
       data: {
         MeetingDate: new Date(MeetingDate),
         MeetingTypeID,
@@ -20,13 +20,10 @@ export async function UpdateMeetingAction(id: number, formData: FormData) {
         DocumentPath,
       },
     });
-
-    revalidatePath("/attendance");
   } catch (error) {
     console.error("UPDATE ERROR:", error);
     throw new Error("Failed to update meeting");
   }
 
-  // Redirect is OUTSIDE the try/catch
   redirect("/attendance");
 }
