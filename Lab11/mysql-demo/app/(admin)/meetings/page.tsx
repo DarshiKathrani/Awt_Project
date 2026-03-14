@@ -138,20 +138,22 @@ export default async function GetAll({
 
                     {/* Document Link */}
                     <td className="px-8 py-6 text-center">
-                      {m.DocumentPath ? (
-                        <a
-                          href={m.DocumentPath}
-                          download 
-                          className="inline-flex items-center justify-center w-10 h-10 bg-gray-50 text-gray-400 rounded-xl hover:bg-indigo-600 hover:text-white transition-all border border-gray-100 hover:border-indigo-600 hover:shadow-lg hover:shadow-indigo-200"
-                        >
-                          <FileText className="w-5 h-5" />
-                        </a>
-                      ) : (
-                        <div className="w-10 h-10 rounded-xl border border-dashed border-gray-200 inline-flex items-center justify-center text-gray-200">
-                             —
-                        </div>
-                      )}
-                    </td>
+  {m.DocumentPath ? (
+    <a
+      href={m.DocumentPath}
+      target="_blank" 
+      rel="noopener noreferrer"
+      className="inline-flex items-center justify-center w-10 h-10 bg-gray-50 text-gray-400 rounded-xl hover:bg-indigo-600 hover:text-white transition-all border border-gray-100 hover:border-indigo-600 hover:shadow-lg hover:shadow-indigo-200"
+      
+    >
+      <FileText className="w-5 h-5" />
+    </a>
+  ) : (
+    <div className="w-10 h-10 rounded-xl border border-dashed border-gray-200 inline-flex items-center justify-center text-gray-200">
+      —
+    </div>
+  )}
+</td>
 
                     {/* Actions Group */}
                     <td className="px-8 py-6">
