@@ -3,8 +3,8 @@
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import fs from "fs";
-import path from "path";
+// import fs from "fs"; // Remove or comment out
+// import path from "path"; // Remove or comment out
 
 export async function AddMeetingAction(formData: FormData) {
   let success = false; 
@@ -17,22 +17,12 @@ export async function AddMeetingAction(formData: FormData) {
 
     let DocumentPath: string | null = null;
 
+    // --- TEMPORARY FIX FOR VERCEL ---
     if (file && file.size > 0) {
-      const bytes = await file.arrayBuffer();
-      const buffer = Buffer.from(bytes);
-
-      const uploadDir = path.join(process.cwd(), "public/uploads/meeting_docs");
-
-      // Ensure directory exists
-      if (!fs.existsSync(uploadDir)) {
-        fs.mkdirSync(uploadDir, { recursive: true });
-      }
-
-      const uniqueFileName = `${Date.now()}-${file.name.replaceAll(" ", "_")}`;
-      const filePath = path.join(uploadDir, uniqueFileName);
-      
-      fs.writeFileSync(filePath, buffer);
-      DocumentPath = `/uploads/meeting_docs/${uniqueFileName}`;
+      // Since fs.writeFileSync crashes Vercel, we'll store a placeholder
+      // until you set up a cloud storage like UploadThing or Cloudinary.
+      DocumentPath = `cloud_placeholder_${file.name}`; 
+      console.log("File detected, but skipping local save to prevent Vercel crash.");
     }
 
     await prisma.meetings.create({
@@ -45,16 +35,18 @@ export async function AddMeetingAction(formData: FormData) {
       },
     });
 
-    success = true; // Mark as successful
+    success = true; 
   } catch (error) {
     console.error("DATABASE ERROR:", error);
-    // Return a plain object so the UI can show the error, or re-throw
     throw new Error("Failed to create meeting");
   }
 
-  // Redirect and Revalidate must happen OUTSIDE the try/catch block
   if (success) {
+    // Revalidate BOTH paths to ensure the UI updates everywhere
     revalidatePath("/meetings");
-    redirect("/meetings");
+    revalidatePath("/attendance"); 
+    
+    // Redirecting to the main attendance page as per your requirement
+    redirect("/attendance");
   }
 }
