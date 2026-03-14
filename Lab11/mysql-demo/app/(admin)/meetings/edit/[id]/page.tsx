@@ -4,7 +4,7 @@ import EditMeetingForm from "./EditMeetingForm";
 export default async function EditMeetingPage({ params }: { params: { id: string } }) {
   const meetingId = Number(params.id);
 
-  // Fetch the specific meeting AND all types for the dropdown
+  // CHANGE 'id' to 'MeetingID' here:
   const [meeting, meetingTypes] = await Promise.all([
     prisma.meetings.findUnique({ where: { MeetingID: meetingId } }),
     prisma.meetingtype.findMany(),
