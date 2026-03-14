@@ -87,18 +87,24 @@ export default function AddMeetingForm({ meetingTypes }: Props) {
               Attachment (PDF only)
             </label>
             <div className={`p-4 border-2 border-dashed rounded-xl transition-all ${pdfUrl ? 'border-green-500 bg-green-50' : 'border-gray-200 bg-gray-50'}`}>
-             <UploadButton
-        endpoint="pdfUploader"
-        onUploadBegin={() => setIsUploading(true)}
-        onClientUploadComplete={(res) => {
-          if (res?.[0]) {
-            // Using ufsUrl as per deprecation notice
-            setPdfUrl(res[0].ufsUrl); 
-            setIsUploading(false);
-          }
-        }}
-        onUploadError={(error) => { alert(error.message); setIsUploading(false); }}
-      />
+              <UploadButton
+                endpoint="pdfUploader"
+                onUploadBegin={() => setIsUploading(true)}
+                onClientUploadComplete={(res) => {
+                  if (res?.[0]) {
+                    setPdfUrl(res[0].url);
+                    setIsUploading(false);
+                  }
+                }}
+                onUploadError={(error: Error) => {
+                  alert(`Upload Error: ${error.message}`);
+                  setIsUploading(false);
+                }}
+                appearance={{
+                  button: "bg-blue-600 after:bg-blue-700 focus-within:ring-blue-600 text-sm font-bold px-6",
+                  allowedContent: "text-xs text-gray-400"
+                }}
+              />
               {pdfUrl && (
                 <div className="mt-2 flex items-center justify-center gap-2 text-green-600">
                   <CheckCircle2 className="w-4 h-4" />
