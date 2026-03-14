@@ -4,17 +4,11 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import AdminNavbar from "../ui/AdminNavbar";
 
-export default function AdminLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
-  const [checked, setChecked] = useState(false);
+  const [loading, setLoading] = useState(true); // Start as loading
 
   useEffect(() => {
-
     const token = document.cookie
       .split("; ")
       .find((row) => row.startsWith("token="))
@@ -26,24 +20,24 @@ export default function AdminLayout({
     }
 
     try {
-
       const payload = JSON.parse(atob(token.split(".")[1]));
-
       if (payload.role !== "admin") {
         router.replace("/not-authorized");
-        return;
+      } else {
+        setLoading(false); // Only stop loading if admin
       }
-
-      setChecked(true);
-
     } catch {
       router.replace("/");
     }
+  }, [router]);
 
-  }, []);
-
-  if (!checked) {
-    return null;
+  if (loading) {
+    // Return a full-screen loader so the user doesn't see the dashboard content
+    return (
+      <div className="h-screen w-screen flex items-center justify-center bg-white">
+        <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+      </div>
+    );
   }
 
   return (

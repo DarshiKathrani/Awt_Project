@@ -50,18 +50,11 @@ export default function LoginPage() {
     setMessage('Login successful! Redirecting...');
 
     // redirect based on role
-    if (role === 'admin') {
-      router.push('/admin');
-    }
-    else if (role === 'staff') {
-      router.push('/dashboard');
-    }
-    else if (role === 'meeting_convener') {
-      router.push('/convener-dashboard');
-    }
-    else {
-      router.push('/not-authorized');
-    }
+    setTimeout(() => {
+  if (role === 'admin') router.push('/admin');
+  else if (role === 'staff') router.push('/dashboard');
+  else router.push('/not-authorized');
+}, 100);
 
   } catch (error) {
     console.error('Login error:', error);
